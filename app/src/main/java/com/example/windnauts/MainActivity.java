@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String OUT_CODE = "out";
     private static final String TAG = "MainActivity";
 
-    public String key;
+    public static String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         tmp2.setValue(1);
                     }
                     else if(result.getContents().equals(OUT_CODE)){
+                        Log.d("key",key);
                         Date out_time = new Date();
                         String Data = out_time.toString();
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
