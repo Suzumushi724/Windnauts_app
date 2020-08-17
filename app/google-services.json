@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "970521575517",
+    "firebase_url": "https://windnauts-3d249.firebaseio.com",
+    "project_id": "windnauts-3d249",
+    "storage_bucket": "windnauts-3d249.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970521575517:android:71689edab7e67427d40db4",
+        "android_client_info": {
+          "package_name": "com.example.windnauts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970521575517-4m8rqgidvm4s4vj58nb28cvmdk4s0i6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.windnauts",
+            "certificate_hash": "96b6ec5a650c58608f5cbe4a3594cbd29cdc2926"
+          }
+        },
+        {
+          "client_id": "970521575517-rnutqn2g17vv980f3gfujtn1qkafc8um.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDibZijBWH3JEYx-BD0xZOOuVf2lusaNZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970521575517-rnutqn2g17vv980f3gfujtn1qkafc8um.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
