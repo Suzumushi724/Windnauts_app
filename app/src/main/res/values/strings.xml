@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Windnauts</string>
+    <string name="app_name">作業場入退室管理アプリ</string>
     <string name="welcome">さん、ようこそ</string>
     <string name="come_back">さん、今日も一日ご安全に！</string>
 
