@@ -1,5 +1,6 @@
 package com.example.windnauts;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -32,6 +33,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,10 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 CheckUsers(user);
                 // ...
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
+                Toast.makeText(MainActivity.this,"サインインに失敗しました",Toast.LENGTH_LONG).show();
             }
         }
 
@@ -90,29 +89,58 @@ public class MainActivity extends AppCompatActivity {
                 if(result.getContents() == null) {
                     Toast.makeText(this,"読み取り失敗",Toast.LENGTH_LONG);
                 } else {
+                    DatabaseReference status = FirebaseDatabase.getInstance().getReference(
+                            "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
                     if(result.getContents().equals(IN_CODE)){
-                        Date in_time = new Date();
-                        key = in_time.toString();
-                        String Data = in_time.toString();
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference tmp = database.getReference(
-                                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("in");
-                        tmp.setValue(Data);
-                        DatabaseReference tmp2 = database.getReference(
-                                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
-                        tmp2.setValue(1);
+                        status.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Long status_num = (Long) snapshot.getValue();
+                                if(status_num != null) {
+                                    if (status_num == 0) {
+                                        in();
+                                        Toast.makeText(MainActivity.this,"入室を記録しました",Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "前回の退出記録がありません", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                else{
+                                    in();
+                                    Toast.makeText(MainActivity.this,"入室を記録しました",Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(MainActivity.this,"エラーが発生しました",Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     }
                     else if(result.getContents().equals(OUT_CODE)){
-                        Log.d("key",key);
-                        Date out_time = new Date();
-                        String Data = out_time.toString();
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference tmp = database.getReference(
-                                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("out");
-                        tmp.setValue(Data);
-                        DatabaseReference tmp2 = database.getReference(
-                                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
-                        tmp2.setValue(0);
+                        status.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Long status_num = (Long)snapshot.getValue();
+                                if(status_num != null) {
+                                    if (status_num == 1) {
+                                        out();
+                                        Toast.makeText(MainActivity.this, "退室を記録しました", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "前回の入室記録がありません", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                else{
+                                    Toast.makeText(MainActivity.this,"入室から記録してください",Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(MainActivity.this,"エラーが発生しました",Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     }
                 }
             } else {
@@ -177,5 +205,29 @@ public class MainActivity extends AppCompatActivity {
         return user;
     }
 
+    public void in(){
+        Date in_time = new Date();
+        key = in_time.toString();
+        String Data = in_time.toString();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference tmp = database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("in");
+        tmp.setValue(Data);
+        DatabaseReference tmp2 = database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
+        tmp2.setValue(1);
+    }
+
+    public void out(){
+        Date out_time = new Date();
+        String Data = out_time.toString();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference tmp = database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("out");
+        tmp.setValue(Data);
+        DatabaseReference tmp2 = database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
+        tmp2.setValue(0);
+    }
 
 }
