@@ -30,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EventListener;
@@ -46,12 +46,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String OUT_CODE = "out";
     private static final String TAG = "MainActivity";
 
-    public static String key;
+    public String today;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Date date = new Date();
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+        today = dateformat.format(date);
         createSignInIntent();
         Button scan_button = findViewById(R.id.scan);
         scan_button.setOnClickListener(
@@ -62,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        ActiveDataListener();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -171,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
         if(user != null) {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             final DatabaseReference members = database.getReference("members");
-            members.addValueEventListener(new ValueEventListener() {
+            members.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, String> value = new HashMap<>();
                     value = (Map<String, String>) dataSnapshot.getValue();
                     Log.d(TAG, "Value is: " + value);
@@ -192,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
                         DatabaseReference member = database.getReference("members").child(user.getUid()).child("name");
                         member.setValue(user.getDisplayName());
                     }
-
                 }
 
                 @Override
@@ -207,11 +209,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void in(){
         Date in_time = new Date();
-        key = in_time.toString();
         String Data = in_time.toString();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference tmp = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("in");
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("in");
         tmp.setValue(Data);
         DatabaseReference tmp2 = database.getReference(
                 "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
@@ -223,11 +224,35 @@ public class MainActivity extends AppCompatActivity {
         String Data = out_time.toString();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference tmp = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(key).child("out");
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("out");
         tmp.setValue(Data);
         DatabaseReference tmp2 = database.getReference(
                 "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
         tmp2.setValue(0);
     }
 
+    public void ActiveDataListener(){
+        FirebaseDatabase.getInstance().getReference("members").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Iterable<DataSnapshot>members = snapshot.getChildren();
+                for(DataSnapshot member:members){
+                    DataSnapshot active_status = (DataSnapshot)snapshot.child(member.toString()).child("Active");
+                    if(active_status.exists()){
+                        if((int)active_status.getValue() == 1){
+
+                        }
+                        else if((int)active_status.getValue() == 0){
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }
