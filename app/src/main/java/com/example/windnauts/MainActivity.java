@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-        //ActiveDataListener();
+        ActiveDataListener();
     }
 
     @Override
