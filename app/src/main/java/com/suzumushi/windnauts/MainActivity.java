@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-        //ActiveDataListener();
+        ActiveDataListener();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         if(user != null) {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             final DatabaseReference members = database.getReference("members");
-            members.addListenerForSingleValueEvent(new ValueEventListener() {
+            members.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, String> value = new HashMap<>();
@@ -207,42 +207,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void in(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active")
+                .setValue(1);
         Date in_time = new Date();
         String Data = in_time.toString();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference tmp = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("in");
-        tmp.setValue(Data);
-        DatabaseReference tmp2 = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
-        tmp2.setValue(1);
+        database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("in")
+                .setValue(Data);
     }
 
     public void out(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active")
+                .setValue(0);
         Date out_time = new Date();
         String Data = out_time.toString();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference tmp = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("out");
-        tmp.setValue(Data);
-        DatabaseReference tmp2 = database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active");
-        tmp2.setValue(0);
+        database.getReference(
+                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("out")
+                .setValue(Data);
     }
 
     public void ActiveDataListener(){
-        FirebaseDatabase.getInstance().getReference("members").addValueEventListener(new ValueEventListener() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("members");
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Iterable<DataSnapshot>members = snapshot.getChildren();
                 TextView active_users_text = findViewById(R.id.active_users);
+                active_users_text.setText("");
+                active_users_text.setText("現在作業場にいる部員\n");
                 for(DataSnapshot member:members){
-                    DataSnapshot active_status = (DataSnapshot)snapshot.child(member.toString()).child("Active");
+                    DataSnapshot active_status = (DataSnapshot)snapshot.child(member.getKey()).child("Active");
                     if(active_status.exists()){
-                        Log.d("wis","active_checked");
-                        if((int)active_status.getValue() == 1){
-                            //Log.d("wis","active_checked");
-                            active_users_text.append((String)snapshot.child(member.toString()).child("name").getValue()+"\n");
+                        if((Long)active_status.getValue() == 1){
+                            active_users_text.append((String)snapshot.child(member.getKey()).child("name").getValue()+"\n");
                         }
                     }
                 }
@@ -253,6 +254,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 }
