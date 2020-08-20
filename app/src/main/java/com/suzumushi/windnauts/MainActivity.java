@@ -200,12 +200,12 @@ public class MainActivity extends AppCompatActivity {
         Date time = new Date();
         String Data = time.toString();
         if(first_time){
-            ref.child("Data").child(today).child(code).setValue(new ArrayList<String>(){{add(Data);}});
+            ref.child("Data").child(today).child(code).setValue(new ArrayList<Date>(){{add(time);}});
             return;
         }
         else{
-            List<String> data_list = (List<String>) snapshot.child("Data").child(today).child(code).getValue();
-            data_list.add(Data);
+            List<Date> data_list = (List<Date>) snapshot.child("Data").child(today).child(code).getValue();
+            data_list.add(time);
             ref.child("Data").child(today).child(code).setValue(data_list);
             return;
         }
@@ -219,7 +219,9 @@ public class MainActivity extends AppCompatActivity {
                 Iterable<DataSnapshot>members = snapshot.getChildren();
                 TextView active_users_text = findViewById(R.id.active_users);
                 active_users_text.setText("");
+                active_users_text.setTextSize(18);
                 active_users_text.setText("現在作業場にいる人\n");
+                active_users_text.setTextSize(14);
                 for(DataSnapshot member:members){
                     DataSnapshot active_status = (DataSnapshot)snapshot.child(member.getKey()).child("Active");
                     if(active_status.exists()){
