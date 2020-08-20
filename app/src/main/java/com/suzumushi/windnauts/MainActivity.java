@@ -94,21 +94,13 @@ public class MainActivity extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 Long status_num = (Long) snapshot.child("Active").getValue();
                                 if(status_num != null) {
-
-                                        if (status_num == 0) {
-                                            inout(snapshot,IN_CODE,!snapshot.child("Data").child(today).child("in").exists());
-                                            Toast.makeText(MainActivity.this, "入室を記録しました", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(MainActivity.this, "前回の退出記録がありません", Toast.LENGTH_LONG).show();
-                                        }
+                                    if (status_num == 0) {
+                                        inout(snapshot,IN_CODE,!snapshot.child("Data").child(today).child("in").exists());
+                                        Toast.makeText(MainActivity.this, "入室を記録しました", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "前回の退出記録がありません", Toast.LENGTH_LONG).show();
+                                    }
                                 }
-                                /*
-                                else{
-                                    in(snapshot);
-                                    Toast.makeText(MainActivity.this,"入室を記録しました",Toast.LENGTH_LONG).show();
-                                }
-
-                                 */
                             }
 
                             @Override
@@ -208,11 +200,7 @@ public class MainActivity extends AppCompatActivity {
         Date time = new Date();
         String Data = time.toString();
         if(first_time){
-            ref.child("Data").child(today).child(code).setValue(new ArrayList<String>(){
-                {
-                    add(Data);
-                }
-            });
+            ref.child("Data").child(today).child(code).setValue(new ArrayList<String>(){{add(Data);}});
             return;
         }
         else{
@@ -222,20 +210,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
     }
-/*
-    public void out(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Active")
-                .setValue(0);
-        Date out_time = new Date();
-        String Data = out_time.toString();
-        database.getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Data").child(today).child("out")
-                .setValue(Data);
-    }
-
- */
 
     public void ActiveDataListener(){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("members");
@@ -245,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 Iterable<DataSnapshot>members = snapshot.getChildren();
                 TextView active_users_text = findViewById(R.id.active_users);
                 active_users_text.setText("");
-                active_users_text.setText("現在作業場にいる部員\n");
+                active_users_text.setText("現在作業場にいる人\n");
                 for(DataSnapshot member:members){
                     DataSnapshot active_status = (DataSnapshot)snapshot.child(member.getKey()).child("Active");
                     if(active_status.exists()){
