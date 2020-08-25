@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String IN_CODE = "in";
     private static final String OUT_CODE = "out";
     private static final String TAG = "MainActivity";
+    private static final String EMAIL = "@dc.tohoku.ac.jp";
 
     public String today;
 
@@ -51,16 +53,6 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
         today = dateformat.format(date);
         createSignInIntent();
-        Button scan_button = findViewById(R.id.scan);
-        scan_button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        new IntentIntegrator(MainActivity.this).setRequestCode(SCAN_CODE).initiateScan();
-                    }
-                }
-        );
-        ActiveDataListener();
     }
 
     @Override
@@ -73,10 +65,33 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                CheckUsers(user);
+                if(user.getEmail().substring(user.getEmail().length()-EMAIL.length()).equals(EMAIL)) {
+                    CheckUsers(user);
+                    Button scan_button = findViewById(R.id.scan);
+                    scan_button.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    new IntentIntegrator(MainActivity.this).setRequestCode(SCAN_CODE).initiateScan();
+                                }
+                            }
+                    );
+                    ActiveDataListener();
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"メールアドレスが無効です",Toast.LENGTH_LONG).show();
+                }
                 // ...
             } else {
-                Toast.makeText(MainActivity.this,"サインインに失敗しました",Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this,"サインインに失敗しました",Toast.LENGTH_LONG).show();
+                if(response == null){
+                    Toast.makeText(MainActivity.this,"response is null",Toast.LENGTH_LONG).show();
+                }
+                if(response.getError().getErrorCode() == ErrorCodes.NO_NETWORK){
+                    Toast.makeText(MainActivity.this,"No network",Toast.LENGTH_LONG).show();
+                }
+                String err = response.getError().toString();
+                Toast.makeText(MainActivity.this,err,Toast.LENGTH_LONG).show();
             }
         }
 
@@ -246,5 +261,4 @@ public class MainActivity extends AppCompatActivity {
         TextView user_name = findViewById(R.id.user_name);
         user_name.setText(user.getDisplayName() + getString(R.string.welcome));
     }
-
 }
