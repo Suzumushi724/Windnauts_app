@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this,"読み取り失敗",Toast.LENGTH_LONG);
                 } else {
                     DatabaseReference status = FirebaseDatabase.getInstance().getReference(
-                            "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            "人力飛行部").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     if(result.getContents().equals(IN_CODE)){
                         status.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseUser CheckUsers(final FirebaseUser user) {
         if(user != null) {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            final DatabaseReference members = database.getReference("members");
+            final DatabaseReference members = database.getReference("人力飛行部");
             members.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void inout(DataSnapshot snapshot,String code,boolean first_time){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                "members").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                "人力飛行部").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         if(code.equals(IN_CODE)) {
             ref.child("Active").setValue(1);
         }
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void ActiveDataListener(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("members");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("人力飛行部");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init_user(FirebaseUser user, FirebaseDatabase database){
-        DatabaseReference member = database.getReference("members").child(user.getUid());
+        DatabaseReference member = database.getReference("人力飛行部").child(user.getUid());
         member.child("name").setValue(user.getDisplayName());
         member.child("Active").setValue(0);
         TextView user_name = findViewById(R.id.user_name);
